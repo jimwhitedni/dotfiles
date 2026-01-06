@@ -3,7 +3,7 @@ alias ld='eza -lD'
 alias lf='eza -lF --color=always | grep -v /'
 alias lh='eza -dl .* --group-directories-first'
 alias ll='eza -al --group-directories-first'
-alias ls='eza -a --long --tree --level=1 --sort=type'
+alias ls='eza -a --icons'
 
 # ===== Node.js 環境 =====
 # NVM
@@ -46,9 +46,10 @@ eval "$(zoxide init zsh)" 2>/dev/null
 # ===== zsh-autosuggestions (指令自動建議) =====
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh 2>/dev/null
 
+
 # ===== Git Branch Prompt =====
 parse_git_branch() {
-    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
 }
 setopt PROMPT_SUBST
-PROMPT='%~$(parse_git_branch) %# '
+PROMPT='%F{cyan}%~%f %F{green}$(parse_git_branch)%f %F{yellow}❯%f '
