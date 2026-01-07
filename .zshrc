@@ -53,3 +53,37 @@ parse_git_branch() {
 }
 setopt PROMPT_SUBST
 PROMPT='%F{cyan}%~%f %F{green}$(parse_git_branch)%f %F{yellow}❯%f '
+
+
+
+
+
+
+
+
+
+
+
+
+# ===== rg + fzf 互動搜尋 =====
+rgf() {
+  local result
+  result=$(rg --color=always --line-number --no-heading "$@" |
+    fzf --ansi \
+        --delimiter : \
+        --preview 'line={2}; start=$((line > 30 ? line - 30 : 1)); bat --style=numbers --color=always --highlight-line {2} {1} --line-range $start:+60 2>/dev/null' \
+        --preview-window 'right:60%')
+  
+  if [[ -n "$result" ]]; then
+    local file=$(echo "$result" | cut -d: -f1)
+    local line=$(echo "$result" | cut -d: -f2)
+    nvim "+$line" "$file"
+  fi
+}
+
+# ===== bat theme 跟隨系統 =====
+if [[ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" == "Dark" ]]; then
+  export BAT_THEME="Dracula"
+else
+  export BAT_THEME="GitHub"
+fi
