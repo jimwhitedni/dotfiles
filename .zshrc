@@ -87,3 +87,17 @@ if [[ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" == "Dark" ]]; then
 else
   export BAT_THEME="GitHub"
 fi
+
+
+
+# ===== fd + fzf 搜尋檔案 =====
+ff() {
+  local result
+  result=$(fd --type f --hidden --no-ignore --exclude .git --exclude node_modules --exclude dist --exclude .nx "$@" |
+    fzf --preview 'bat --style=numbers --color=always {} 2>/dev/null || cat {}' \
+        --preview-window 'right:60%')
+  
+  if [[ -n "$result" ]]; then
+    nvim "$result"
+  fi
+}
