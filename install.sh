@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -e
+
+echo "🚀 開始安裝 dotfiles..."
+
+# 1. 安裝 Homebrew（如果沒有）
+if ! command -v brew &> /dev/null; then
+  echo "📦 安裝 Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# 2. 安裝工具
+echo "📦 安裝工具..."
+brew install fzf zoxide zsh-autosuggestions eza bat ripgrep
+
+# 3. 安裝 Ghostty
+echo "👻 安裝 Ghostty..."
+brew install --cask ghostty
+
+# 4. 建立 symlinks
+echo "🔗 建立 symlinks..."
+
+# zshrc
+ln -sf ~/dotfiles/.zshrc ~/.zshrc
+
+# Ghostty
+mkdir -p ~/.config/ghostty
+ln -sf ~/dotfiles/ghostty.config ~/.config/ghostty/config
+
+# Neovim
+ln -sf ~/dotfiles/nvim ~/.config/nvim
+
+# 5. 載入設定
+echo "✅ 完成！請執行: source ~/.zshrc"
