@@ -3,7 +3,7 @@ alias ld='eza -lD'
 alias lf='eza -lF --color=always | grep -v /'
 alias lh='eza -dl .* --group-directories-first'
 alias ll='eza -al --group-directories-first'
-alias ls='eza -a --icons'
+alias ls='eza -al --icons --group-directories-first'
 
 # ===== Node.js 環境 =====
 # NVM
@@ -101,3 +101,12 @@ ff() {
     nvim "$result"
   fi
 }
+
+# tmux
+alias ta='tmux attach'
+alias tl='tmux ls'
+alias tk='tmux kill-session -t'
+
+# 防止睡眠（開會用）
+alias awake='caffeinate -dims & echo "☕ Mac 不會睡眠了"'
+alias sleep-ok='pkill caffeinate && echo "😴 恢復正常省電"'

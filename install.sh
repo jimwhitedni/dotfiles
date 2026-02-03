@@ -3,14 +3,14 @@ set -e
 echo "🚀 開始安裝 dotfiles..."
 
 # 1. 安裝 Homebrew（如果沒有）
-if ! command -v brew &> /dev/null; then
+if ! command -v brew &>/dev/null; then
   echo "📦 安裝 Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
 # 2. 安裝工具
 echo "📦 安裝工具..."
-brew install fzf zoxide zsh-autosuggestions eza bat ripgrep fd neovim
+brew install fzf zoxide zsh-autosuggestions eza bat ripgrep fd neovim tmux
 
 # 3. 安裝 Ghostty
 echo "👻 安裝 Ghostty..."
