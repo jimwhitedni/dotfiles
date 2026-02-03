@@ -110,3 +110,6 @@ alias tk='tmux kill-session -t'
 # 防止睡眠（開會用）
 alias awake='caffeinate -dims & echo "☕ Mac 不會睡眠了"'
 alias sleep-ok='pkill caffeinate && echo "😴 恢復正常省電"'
+
+# dev-start
+alias dev='~/dotfiles/dev-start.sh'
