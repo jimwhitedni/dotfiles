@@ -113,3 +113,6 @@ alias sleep-ok='pkill caffeinate && echo "😴 恢復正常省電"'
 
 # dev-start
 alias dev='~/dotfiles/dev-start.sh'
+
+# dev status
+alias ds='~/dotfiles/dev-status.sh'
