@@ -116,3 +116,5 @@ alias dev='~/dotfiles/dev-start.sh'
 
 # dev status
 alias ds='~/dotfiles/dev-status.sh'
+# copy pwd
+alias cpwd='pwd | pbcopy'
