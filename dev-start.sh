@@ -93,8 +93,9 @@ create_session() {
   # 建立新 session
   tmux new-session -d -s "$session" -c "$dir"
   tmux rename-window -t "$session:1" 'nvim'
-  tmux new-window -t "$session" -n 'serve' -c "$dir"
-  tmux new-window -t "$session" -n 'claude' -c "$dir"
+  # serve (25%) | claude (75%) 左右分割
+  tmux new-window -t "$session" -n 'work' -c "$dir"
+  tmux split-window -h -t "$session:2" -c "$dir" -l 75%
 
   tmux attach -t "$session"
 }
