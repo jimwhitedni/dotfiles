@@ -77,6 +77,46 @@ show_list() {
   echo "  dev <name> <path>   指定 session 名稱與目錄"
 }
 
+# 詢問是否要 symlink 主倉庫的 .claude/ 到 worktree
+link_claude_dir() {
+  local repo="$1"
+  local wt_dir="$2"
+  local claude_src="$repo/.claude"
+  local claude_dst="$wt_dir/.claude"
+
+  # 主倉庫沒有 .claude/ 就跳過
+  [ ! -d "$claude_src" ] && return
+
+  # 已經是正確的 symlink 就跳過
+  if [ -L "$claude_dst" ]; then
+    local target
+    target=$(readlink "$claude_dst")
+    if [ "$target" = "$claude_src" ]; then
+      return
+    fi
+  fi
+
+  # 已經存在（非 symlink）就跳過
+  if [ -e "$claude_dst" ]; then
+    echo "⚠ worktree 已有 .claude/（非 symlink），跳過"
+    return
+  fi
+
+  echo ""
+  echo "偵測到主倉庫有 .claude/ 目錄"
+  echo "  來源: $claude_src"
+  echo "  目標: $claude_dst"
+  read -r -p "是否要 symlink .claude/ 到此 worktree？(Y/n) " ans
+  case "$ans" in
+    [nN]*) echo "跳過 symlink" ;;
+    *)
+      ln -s "$claude_src" "$claude_dst"
+      echo "✓ 已建立 symlink: .claude/ → $claude_src"
+      ;;
+  esac
+  echo ""
+}
+
 create_session() {
   local session="$1"
   local dir="$2"
@@ -150,6 +190,7 @@ if [ -n "$REPO" ]; then
   # 其他 worktree
   WT_DIR=$(find_worktree "$REPO" "$SESSION")
   if [ -n "$WT_DIR" ] && [ -d "$WT_DIR" ]; then
+    link_claude_dir "$REPO" "$WT_DIR"
     create_session "$SESSION" "$WT_DIR"
     exit 0
   fi
