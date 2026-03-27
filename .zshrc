@@ -118,3 +118,19 @@ alias dev='~/dotfiles/dev-start.sh'
 alias ds='~/dotfiles/dev-status.sh'
 # copy pwd
 alias cpwd='pwd | pbcopy'
+precmd() { printf '[6 q' }
+alias node-check='~/dotfiles/node-check.sh'
+
+# ===== 切換深淺色模式 =====
+darkmode() {
+  local current=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+  if [[ "$current" == "Dark" ]]; then
+    osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to false'
+    export BAT_THEME="GitHub"
+    echo "Switched to Light mode"
+  else
+    osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to true'
+    export BAT_THEME="Dracula"
+    echo "Switched to Dark mode"
+  fi
+}
