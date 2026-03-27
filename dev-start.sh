@@ -77,44 +77,36 @@ show_list() {
   echo "  dev <name> <path>   指定 session 名稱與目錄"
 }
 
-# 詢問是否要 symlink 主倉庫的 .claude/ 到 worktree
-link_claude_dir() {
+# 自動 symlink 主倉庫的共用目錄到 worktree
+link_shared_dirs() {
   local repo="$1"
   local wt_dir="$2"
-  local claude_src="$repo/.claude"
-  local claude_dst="$wt_dir/.claude"
+  local dirs=(".claude" ".agents")
 
-  # 主倉庫沒有 .claude/ 就跳過
-  [ ! -d "$claude_src" ] && return
+  local dir
+  for dir in "${dirs[@]}"; do
+    local src="$repo/$dir"
+    local dst="$wt_dir/$dir"
 
-  # 已經是正確的 symlink 就跳過
-  if [ -L "$claude_dst" ]; then
-    local target
-    target=$(readlink "$claude_dst")
-    if [ "$target" = "$claude_src" ]; then
-      return
+    # 主倉庫沒有該目錄就跳過
+    [ ! -d "$src" ] && continue
+
+    # 已經是正確的 symlink 就跳過
+    if [ -L "$dst" ]; then
+      local target
+      target=$(readlink "$dst")
+      [ "$target" = "$src" ] && continue
     fi
-  fi
 
-  # 已經存在（非 symlink）就跳過
-  if [ -e "$claude_dst" ]; then
-    echo "⚠ worktree 已有 .claude/（非 symlink），跳過"
-    return
-  fi
+    # 已經存在（非 symlink）就跳過
+    if [ -e "$dst" ]; then
+      echo "⚠ worktree 已有 $dir/（非 symlink），跳過"
+      continue
+    fi
 
-  echo ""
-  echo "偵測到主倉庫有 .claude/ 目錄"
-  echo "  來源: $claude_src"
-  echo "  目標: $claude_dst"
-  read -r -p "是否要 symlink .claude/ 到此 worktree？(Y/n) " ans
-  case "$ans" in
-    [nN]*) echo "跳過 symlink" ;;
-    *)
-      ln -s "$claude_src" "$claude_dst"
-      echo "✓ 已建立 symlink: .claude/ → $claude_src"
-      ;;
-  esac
-  echo ""
+    ln -s "$src" "$dst"
+    echo "✓ symlink: $dir/ → $src"
+  done
 }
 
 create_session() {
@@ -129,6 +121,17 @@ create_session() {
     tmux attach -t "$session"
     exit 0
   }
+
+  # 若目標是 worktree，自動 symlink 共用目錄
+  if [ -f "$dir/.git" ]; then
+    local common_dir
+    common_dir=$(git -C "$dir" rev-parse --git-common-dir 2>/dev/null)
+    if [ -n "$common_dir" ]; then
+      local main_repo
+      main_repo=$(cd "$dir" && cd "$(dirname "$common_dir")" && pwd)
+      link_shared_dirs "$main_repo" "$dir"
+    fi
+  fi
 
   # 建立新 session
   tmux new-session -d -s "$session" -c "$dir"
@@ -190,7 +193,6 @@ if [ -n "$REPO" ]; then
   # 其他 worktree
   WT_DIR=$(find_worktree "$REPO" "$SESSION")
   if [ -n "$WT_DIR" ] && [ -d "$WT_DIR" ]; then
-    link_claude_dir "$REPO" "$WT_DIR"
     create_session "$SESSION" "$WT_DIR"
     exit 0
   fi
