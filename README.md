@@ -138,6 +138,29 @@ dev -l
 | `tk <name>` | 關閉指定 session |
 | `Ctrl+a s` | 切換 session |
 | `Ctrl+a w` | 總覽 session + window |
+| `Ctrl+a -` | 往下開 pane（繼承 worktree 目錄）|
+| `Ctrl+a \|` | 往右開 pane |
+
+### Session 持久化
+
+用 [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect) +
+[continuum](https://github.com/tmux-plugins/tmux-continuum)，每 15 分鐘自動存檔，
+tmux server 啟動時自動還原。
+
+還原的是 session、window、cwd 與版面，**不是 Claude 的對話**。Claude 不在 resurrect
+的 process 白名單裡，而且本來就是手動起的 —— 所以重開機後你會得到停在正確目錄的 shell，
+自己決定要不要 `claude --continue` 接回去。
+
+刻意沒開 `@resurrect-capture-pane-contents`：還原出來會是「上次 Claude 畫面的靜態快照」
+貼在一個沒有 Claude 的 shell 裡，看起來像還在跑但其實不是。乾淨的 shell 比會騙人的截圖好。
+
+| 指令 | 說明 |
+|---|---|
+| `Ctrl+a C-s` | 立即存檔 |
+| `Ctrl+a C-r` | 立即還原 |
+
+跑完 `dev --reap` 之後記得 `Ctrl+a C-s` 存一次，否則下次還原會把剛刪掉的 worktree
+的 session 復活回來。
 
 ## 搜尋工具
 
@@ -179,7 +202,14 @@ ff "component"
 
 ## 終端機 (Ghostty)
 
-- 字體：JetBrainsMono Nerd Font 14pt
+第一個分頁開啟時直接進 cc-monitor（`initial-command`，只作用於第一個 surface，
+`cmd+t` 開的新分頁仍是普通 shell）。它同時會 `tmux start-server` —— continuum 的
+自動還原掛在 tmux server 啟動時，而 cc-monitor 自己不會啟動 server，所以重開機後
+需要有人去碰一下 tmux，session 才會回來。
+
+按 `q` 離開 cc-monitor 不會關掉分頁，會落回一個普通 shell。
+
+- 字體：JetBrainsMono Nerd Font Mono 14pt
 - 主題：自動跟隨系統深淺色（Light: Apple System Colors / Dark: Dracula）
 - 分割：`Cmd+D` 水平、`Cmd+Shift+D` 垂直
 - 切換分割：`Cmd+Alt+方向鍵`
