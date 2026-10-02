@@ -102,9 +102,8 @@ ff() {
 }
 
 # tmux
-# 叫出主控台。cc-monitor 自己會先找有沒有正在跑的，有就切過去，不會開第二個
-# —— 這很重要，因為 monitor session 在 pane 被搬進某個 session 時就不存在了，
-# 單靠 `new-session -A` 找不到它。
+# 叫出主控台。-A：已經有 monitor session 就直接接回去，不會開第二個。
+# cc-monitor 自己也會再擋一層：偵測到已經有一個在跑就切過去而不是並存。
 alias ccm='tmux new-session -A -s monitor "cc-monitor; exec zsh -i"'
 
 alias ta='tmux attach'

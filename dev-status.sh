@@ -8,7 +8,8 @@ cat <<'EOF'
 │   j/k       移動      i    回覆                     │
 │   1-9 y n   回答提示  esc  中斷                     │
 │   N         開始工作（沒有 Claude 的 worktree）     │
-│   a         attach    u    用量／node               │
+│   a         過去該 session   C-a m  切回來          │
+│   ?         全部快捷鍵  u   用量／node              │
 └─────────────────────────────────────────────────────┘
 
 ┌─ dev ─────────────────── worktree 與 session ───────┐
@@ -23,8 +24,9 @@ cat <<'EOF'
 │   |         往右開 pane                             │
 │   c         新 window                               │
 │   h j k l   切換 pane     H J K L  調整大小         │
+│   m         回 cc-monitor                           │
 │   s / w     切換 session / 總覽                     │
-│   d         detach（回到 cc-monitor）               │
+│   d         detach（整個離開 tmux）                 │
 └─────────────────────────────────────────────────────┘
 
 session 是一個 window、一個 pane。
