@@ -207,7 +207,8 @@ ff "component"
 tmux server，continuum 的自動還原掛在 server 啟動時，所以重開機後 session 會自己回來。
 
 每個 window 最左邊都是一份 cc-monitor 側欄，右邊是真正的 session。`space` 把清單上的
-session 顯示在右邊、留在清單，`enter` 進去、游標放進它的 prompt，`C-a m` 回清單。切換
+session 顯示在右邊、留在清單，`enter` 進去、游標放進它的 prompt，`C-a m` 回清單（清單當掉或
+被關掉時，`C-a m` 會把它叫回來）。在清單裡不管卡在哪裡，按 `?`。切換
 只是把 client 移到那個 session —— 那裡本來就有自己的側欄，所以左邊不會消失，也沒有
 任何 pane 被搬動。新開的 session（`N`、`dev`、`C-a c`）一出現就帶著側欄。
 
