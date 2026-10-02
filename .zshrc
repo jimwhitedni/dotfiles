@@ -102,18 +102,13 @@ ff() {
 }
 
 # tmux
-# 叫出主控台。在 tmux 裡面通常用 C-a m 就好，這個是給 tmux 外面的 shell 用的。
-#
-# 不能只寫 new-session -A：那在 tmux 裡面會 attach，而 tmux 拒絕巢狀 attach
-# （"sessions should be nested with care"），整個指令失敗，連 session 都不會建。
-# 所以先確保 session 在，再依所在位置決定 switch 還是 attach。
+# 叫出主控台。在 tmux 外：接回上次的 session，沒有就開一個 home —— 每個 window 都有
+# 側欄，接回去清單就在旁邊。在 tmux 內：跳到這個 window 的側欄（跟 C-a m 一樣）。
 ccm() {
-  tmux has-session -t '=monitor' 2>/dev/null ||
-    tmux new-session -d -s monitor "cc-monitor; exec zsh -i"
   if [ -n "$TMUX" ]; then
-    tmux switch-client -t '=monitor'
+    cc-monitor
   else
-    tmux attach -t '=monitor'
+    tmux attach 2>/dev/null || tmux new-session -s home
   fi
 }
 

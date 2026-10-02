@@ -3,12 +3,14 @@
 # 速查表。即時狀態不在這裡看：session 看 cc-monitor，worktree 看 dev -l。
 
 cat <<'EOF'
-┌─ cc-monitor ──────────── Claude session 主控台 ─────┐
-│   tab       跳到下一個在等你的                      │
-│   j/k       移動      i    回覆                     │
-│   1-9 y n   回答提示  esc  中斷                     │
+┌─ cc-monitor ─────────── 每個 window 左邊的清單 ─────┐
+│   j/k       移動游標（右邊不變）                    │
+│   space     把它顯示在右邊，留在清單                │
+│   enter     進去，游標放進它的 prompt               │
+│   tab / [   下一個／上一個在等你的                  │
+│   i         回覆   1-9 y n  回答   esc  中斷        │
 │   N         開始工作（沒有 Claude 的 worktree）     │
-│   a         過去該 session   C-a m  切回來          │
+│   < >       清單寬度（每個 window 一起）            │
 │   ?         全部快捷鍵  u   用量／node              │
 └─────────────────────────────────────────────────────┘
 
@@ -24,11 +26,12 @@ cat <<'EOF'
 │   |         往右開 pane                             │
 │   c         新 window                               │
 │   h j k l   切換 pane     H J K L  調整大小         │
-│   m         回 cc-monitor                           │
+│   m         回左邊的清單      z  全螢幕／還原       │
 │   s / w     切換 session / 總覽                     │
 │   d         detach（整個離開 tmux）                 │
 └─────────────────────────────────────────────────────┘
 
-session 是一個 window、一個 pane。
+每個 window 都是 [清單 | 你的 pane]。清單不會不見，要暫時藏起來按 C-a z。
 偶爾要 nvim 或 dev server，C-a - 臨時開一格，用完 exit。
+完全不要清單：cc-monitor --sidebars off（on 換回來）。
 EOF

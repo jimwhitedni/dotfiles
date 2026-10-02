@@ -165,14 +165,28 @@ create_session() {
     fi
   fi
 
-  # 一個 window、一個 pane。
+  # 一個 window：左邊是 cc-monitor 側欄，右邊是你的 shell。
   #
   # 原本固定開三個 pane（nvim window + serve|claude 分割），但證據顯示 nvim window
   # 從沒用過，serve pane 五個裡有四個閒置 —— 而且 serve 本來就是單例（整台機器只有
   # 一個 dev server，綁死一個 port），每個 worktree 配一格在結構上就跑不起來。
   #
+  # 交給 cc-monitor 建，跟主控台裡按 N 建出來的一模一樣：側欄一開始就在、寬度對，
+  # 而且是照你看到它的尺寸建，不會先以 80x24 出生、打開時側欄被拉成一百多欄。
+  # cc-monitor 不在的話照舊建一個普通 session，tmux 的 hook 會在一秒內補上側欄。
+  #
   # 臨時要 shell 或 server：C-a - 往下開、C-a | 往右開，兩者都會繼承 worktree 目錄。
-  tmux new-session -d -s "$session" -n "$session" -c "$dir"
+  if command -v cc-monitor >/dev/null 2>&1; then
+    local size=""
+    # tmux 裡面讓 cc-monitor 自己量你正在看的 window；外面就用這個終端機的大小
+    # （少一行給狀態列）。
+    if [ -z "$TMUX" ]; then
+      size="$(tput cols 2>/dev/null || echo 0)x$(( $(tput lines 2>/dev/null || echo 1) - 1 ))"
+    fi
+    cc-monitor --new-session "$session" "$dir" ${size:+--size "$size"} >/dev/null || exit 1
+  else
+    tmux new-session -d -s "$session" -n "$session" -c "$dir"
+  fi
 
   attach_session "$session"
 }

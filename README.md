@@ -202,19 +202,17 @@ ff "component"
 
 ## 終端機 (Ghostty)
 
-第一個分頁開啟時直接進 cc-monitor（`initial-command`，只作用於第一個 surface，
-`cmd+t` 開的新分頁仍是普通 shell）。它同時會 `tmux start-server` —— continuum 的
-自動還原掛在 tmux server 啟動時，而 cc-monitor 自己不會啟動 server，所以重開機後
-需要有人去碰一下 tmux，session 才會回來。
+第一個分頁開啟時直接進 tmux（`initial-command`，只作用於第一個 surface，`cmd+t` 開的
+新分頁仍是普通 shell）：接回上次的 session，tmux 還沒在跑就開一個 `home`。後者會啟動
+tmux server，continuum 的自動還原掛在 server 啟動時，所以重開機後 session 會自己回來。
 
-按 `q` 離開 cc-monitor 會在**原地**留下一個 shell —— pane 和 monitor session 都還在，
-打 `cc-monitor` 就回來了。沒有這個，pane 的指令一結束 pane 就死，整個 monitor session
-跟著消失，分頁也就關掉了。
+每個 window 最左邊都是一份 cc-monitor 側欄，右邊是真正的 session。`space` 把清單上的
+session 顯示在右邊、留在清單，`enter` 進去、游標放進它的 prompt，`C-a m` 回清單。切換
+只是把 client 移到那個 session —— 那裡本來就有自己的側欄，所以左邊不會消失，也沒有
+任何 pane 被搬動。新開的 session（`N`、`dev`、`C-a c`）一出現就帶著側欄。
 
-主控台裡按 `a` 是 `switch-client` 過去那個 session，`C-a m` 切回來。monitor session
-全程沒有被動過 —— cc-monitor 不搬任何 pane。
-
-從零叫出主控台（例如在另一個分頁）用 `ccm`。
+暫時藏起清單用 `C-a z`；完全不要用 `cc-monitor --sidebars off`（`on` 換回來）。在 tmux
+外叫出主控台用 `ccm`。
 
 - 字體：JetBrainsMono Nerd Font Mono 14pt
 - 主題：自動跟隨系統深淺色（Light: Apple System Colors / Dark: Dracula）
