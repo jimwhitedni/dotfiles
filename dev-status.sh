@@ -1,36 +1,32 @@
 #!/bin/bash
 
-echo "┌──────────────────────────────────────────┐"
-echo "│          🖥️  Dev Sessions                │"
-echo "├──────────────────────────────────────────┤"
+# 速查表。即時狀態不在這裡看：session 看 cc-monitor，worktree 看 dev -l。
 
-tmux ls -F '#{session_name}|#{session_windows}|#{session_attached}' 2>/dev/null | while IFS='|' read -r name windows attached; do
-  if [ "$attached" = "1" ]; then
-    status="🟢 active"
-  else
-    status="⚪ detached"
-  fi
-  printf "│  %-15s %s  %s windows     │\n" "$name" "$status" "$windows"
-done || echo "│  沒有任何 session                        │"
+cat <<'EOF'
+┌─ cc-monitor ──────────── Claude session 主控台 ─────┐
+│   tab       跳到下一個在等你的                      │
+│   j/k       移動      i    回覆                     │
+│   1-9 y n   回答提示  esc  中斷                     │
+│   N         開始工作（沒有 Claude 的 worktree）     │
+│   a         attach    u    用量／node               │
+└─────────────────────────────────────────────────────┘
 
-echo "├──────────────────────────────────────────┤"
-echo "│  tmux 操作 (prefix = Ctrl+a)             │"
-echo "│    s         切換 session                 │"
-echo "│    w         總覽 session + window        │"
-echo "│    c         新 window                    │"
-echo "│    |         水平分割 pane                │"
-echo "│    -         垂直分割 pane                │"
-echo "│    h/j/k/l   切換 pane                    │"
-echo "│    H/J/K/L   調整 pane 大小               │"
-echo "│    r         reload config                │"
-echo "├──────────────────────────────────────────┤"
-echo "│  dev 指令                                 │"
-echo "│    dev              當前目錄建 session     │"
-echo "│    dev <name>       session/worktree/proj │"
-echo "│    dev <name> <dir> 指定名稱與目錄        │"
-echo "│    dev -l           列出可用選項          │"
-echo "├──────────────────────────────────────────┤"
-echo "│  ta          tmux attach                  │"
-echo "│  ds          顯示此面板                   │"
-echo "│  cc-monitor  Claude Code TUI 監控         │"
-echo "└──────────────────────────────────────────┘"
+┌─ dev ─────────────────── worktree 與 session ───────┐
+│   dev <name>    開始／跳到該 worktree 的 session    │
+│   dev           當前目錄                            │
+│   dev -l        worktree 生命週期（誰還活著）       │
+│   dev --reap    清掉做完的 worktree                 │
+└─────────────────────────────────────────────────────┘
+
+┌─ tmux ────────────────── prefix = Ctrl+a ───────────┐
+│   -         往下開 pane（繼承 worktree 目錄）       │
+│   |         往右開 pane                             │
+│   c         新 window                               │
+│   h j k l   切換 pane     H J K L  調整大小         │
+│   s / w     切換 session / 總覽                     │
+│   d         detach（回到 cc-monitor）               │
+└─────────────────────────────────────────────────────┘
+
+session 是一個 window、一個 pane。
+偶爾要 nvim 或 dev server，C-a - 臨時開一格，用完 exit。
+EOF

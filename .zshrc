@@ -28,7 +28,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 [ -s "/Users/whiteccchen-mac/.bun/_bun" ] && source "/Users/whiteccchen-mac/.bun/_bun"
 
 # ===== Claude Code =====
-alias claude="/Users/whiteccchen-mac/.claude/local/claude"
 
 # ===== Angular CLI =====
 source <(ng completion script) 2>/dev/null
@@ -134,3 +133,6 @@ darkmode() {
     echo "Switched to Dark mode"
   fi
 }
+# 機密設定放在未追蹤的 ~/.zshrc.local（這個 repo 有 public remote）
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+export PATH="$HOME/.local/bin:$PATH"

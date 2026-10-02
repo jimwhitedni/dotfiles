@@ -41,7 +41,11 @@ source ~/.zshrc
 
 ## Dev Session 管理
 
-用 `dev` 快速建立 tmux 開發 session，每個 session 自帶三個 window：`nvim`、`serve`、`claude`。
+用 `dev` 建立 tmux 開發 session。**一個 session = 一個 worktree = 一個 window = 一個 pane。**
+
+偶爾要 nvim 或 dev server 時臨時開一格就好（`C-a -` 往下、`C-a |` 往右，兩者都會繼承
+worktree 目錄），不預先配置。dev server 本來就是單例 —— 整台機器只有一個、綁死一個
+port —— 所以每個 worktree 配一格在結構上跑不起來。
 
 ### 用法
 
@@ -49,24 +53,48 @@ source ~/.zshrc
 # 在當前目錄建立 session（名稱 = 目錄名）
 dev
 
-# 智慧解析：依序嘗試 tmux session → git worktree → ~/project/<name> → 路徑
+# 智慧解析：tmux session → 當前 repo 的 worktree → 任何 hub 的 worktree → ~/project/<name> → 路徑
 dev <name>
 
 # 指定 session 名稱與目錄
 dev <name> <path>
 
-# 列出可用的 sessions 和 worktrees
+# 建立但不進去（cc-monitor 按 N 時走這條）
+dev -d <name>
+
+# worktree 生命週期：誰有 Claude、誰只剩空殼、誰已經 merge
 dev -l
+
+# 互動式清掉做完的 worktree
+dev --reap
 ```
 
 ### 解析順序
 
 當執行 `dev <name>` 時，會依序嘗試：
 
-1. **tmux session** — 已存在同名 session → 直接 attach
-2. **git worktree** — 當前 repo 的 worktree 名稱匹配 → 用該路徑建立 session
-3. **~/project/\<name\>** — 在 `~/project/` 下有同名目錄 → 用該路徑
-4. **路徑** — 當作目錄路徑處理
+1. **tmux session** — 已存在同名 session → 直接進去（在 tmux 裡用 `switch-client`）
+2. **當前 repo 的 worktree** — 人在 repo 裡時優先，比較符合直覺
+3. **任何 hub 的 worktree** — 不需要先 `cd` 進去。hub 的判斷依據是 `.git/worktrees`
+   存在與否，所以只是名字前綴相同的獨立 clone（例如 `one-ui-kb`）不會被誤判
+4. **~/project/\<name\>** — 在 `~/project/` 下有同名目錄 → 用該路徑
+5. **路徑** — 當作目錄路徑處理
+
+比對一律用 tmux 的 `=` 精確前綴。沒有它 `dev layout` 會因為前綴比對而跑去 attach
+`layout-align`。
+
+### worktree 的 .claude
+
+建立 session 時會把 hub 的 `.claude/knowledge` 與 `.claude/skills` symlink 進 worktree，
+但 `settings.local.json` 是**複製**的。
+
+那個檔案有 259 條授權規則，而 Claude 每次授權都整檔重寫 —— 全部共用同一份的話，兩個
+並行 session 同時授權就是 read-modify-write 競態，後寫的贏，另一個的授權靜默消失，
+之後又被重複詢問。
+
+同時會把 `.claude` 寫進 `$GIT_COMMON_DIR/info/exclude`。專案的 `.gitignore` 寫的是
+`.claude/`，帶尾斜線只 match 目錄 —— worktree 裡它是 symlink，git 視為檔案，所以沒被
+忽略。linked worktree 共用同一份 exclude，寫一次全部生效。
 
 ### 範例
 
@@ -90,12 +118,16 @@ dev ../other-repo
 dev -l
 ```
 
-### Session 狀態
+### 看目前狀態
 
-```bash
-# 查看所有 dev session 狀態
-ds
-```
+| 看什麼 | 用什麼 |
+|---|---|
+| Claude session 在做什麼、誰在等你 | `cc-monitor` |
+| worktree 還活著嗎、該不該收掉 | `dev -l` |
+| 快捷鍵速查 | `ds` |
+
+`cc-monitor` 是主控台 —— 左邊列出所有 Claude session、右邊是選中那個的即時畫面，
+`tab` 跳到下一個在等你的，`i` 直接回覆，`N` 從 worktree 清單開始新工作。
 
 ## tmux 快捷鍵
 

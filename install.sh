@@ -34,6 +34,22 @@ ln -sf ~/dotfiles/ghostty.config ~/.config/ghostty/config
 mkdir -p ~/.config
 ln -sf ~/dotfiles/nvim ~/.config/nvim
 
+# tmux
+ln -sf ~/dotfiles/.tmux.conf ~/.tmux.conf
+
+# dev / ds 指令
+mkdir -p ~/.local/bin
+ln -sf ~/dotfiles/dev-start.sh ~/.local/bin/dev
+ln -sf ~/dotfiles/dev-status.sh ~/.local/bin/ds
+ln -sf ~/dotfiles/node-check.sh ~/.local/bin/node-check
+
+# cc-monitor（Claude session 主控台，需先自行 build）
+if [ -x ~/project/cc-monitor/cc-monitor ]; then
+  ln -sf ~/project/cc-monitor/cc-monitor ~/.local/bin/cc-monitor
+else
+  echo "⚠ cc-monitor 尚未 build：cd ~/project/cc-monitor && go build -o cc-monitor ."
+fi
+
 # 6. 載入設定
 echo "✅ 完成！請執行: source ~/.zshrc"
 echo "📝 首次打開 nvim 會自動安裝插件"
