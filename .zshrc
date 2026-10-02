@@ -102,9 +102,20 @@ ff() {
 }
 
 # tmux
-# 叫出主控台。-A：已經有 monitor session 就直接接回去，不會開第二個。
-# cc-monitor 自己也會再擋一層：偵測到已經有一個在跑就切過去而不是並存。
-alias ccm='tmux new-session -A -s monitor "cc-monitor; exec zsh -i"'
+# 叫出主控台。在 tmux 裡面通常用 C-a m 就好，這個是給 tmux 外面的 shell 用的。
+#
+# 不能只寫 new-session -A：那在 tmux 裡面會 attach，而 tmux 拒絕巢狀 attach
+# （"sessions should be nested with care"），整個指令失敗，連 session 都不會建。
+# 所以先確保 session 在，再依所在位置決定 switch 還是 attach。
+ccm() {
+  tmux has-session -t '=monitor' 2>/dev/null ||
+    tmux new-session -d -s monitor "cc-monitor; exec zsh -i"
+  if [ -n "$TMUX" ]; then
+    tmux switch-client -t '=monitor'
+  else
+    tmux attach -t '=monitor'
+  fi
+}
 
 alias ta='tmux attach'
 alias tl='tmux ls'
