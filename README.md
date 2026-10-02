@@ -207,7 +207,11 @@ ff "component"
 自動還原掛在 tmux server 啟動時，而 cc-monitor 自己不會啟動 server，所以重開機後
 需要有人去碰一下 tmux，session 才會回來。
 
-按 `q` 離開 cc-monitor 不會關掉分頁，會落回一個普通 shell。
+按 `q` 離開 cc-monitor 會在**原地**留下一個 shell —— pane 和版面都還在，打 `cc-monitor`
+就回來了。沒有這個，pane 會隨著 cc-monitor 一起消失：monitor session 在 pane 被搬進
+某個 session 時就不存在了，於是只剩一個 Claude prompt，沒有地方可以把它叫回來。
+
+從零叫出主控台（例如在另一個分頁）用 `ccm`。
 
 - 字體：JetBrainsMono Nerd Font Mono 14pt
 - 主題：自動跟隨系統深淺色（Light: Apple System Colors / Dark: Dracula）
