@@ -102,8 +102,9 @@ ff() {
 }
 
 # tmux
-# 從零叫出主控台（session 已存在就 attach）。pane 裡 cc-monitor 結束後會留下
-# shell，所以在原地重開只要打 cc-monitor。
+# 叫出主控台。cc-monitor 自己會先找有沒有正在跑的，有就切過去，不會開第二個
+# —— 這很重要，因為 monitor session 在 pane 被搬進某個 session 時就不存在了，
+# 單靠 `new-session -A` 找不到它。
 alias ccm='tmux new-session -A -s monitor "cc-monitor; exec zsh -i"'
 
 alias ta='tmux attach'
